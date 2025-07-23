@@ -282,9 +282,29 @@ export default function Component() {
               <CardTitle className="text-center">Brain Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <div style={getBrainOverlayStyle()}>
-                <img src="/brain.png" alt="Brain" className="mx-auto" style={{ width: 400, height: 300 }} />
-                <div style={getOverlayStyle()}></div>
+              <div style={{ position: 'relative', width: 400, height: 300 }}>
+                <img src="/brain.png" alt="Brain" style={{ width: 400, height: 300, display: 'block' }} />
+                <svg
+                  width={400}
+                  height={300}
+                  style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+                >
+                  {wrongGuesses >= 1 && (
+                    <ellipse cx="110" cy="110" rx="55" ry="38" fill="rgba(255,107,107,0.45)" />
+                  )}
+                  {wrongGuesses >= 2 && (
+                    <ellipse cx="220" cy="90" rx="45" ry="30" fill="rgba(78,205,196,0.45)" />
+                  )}
+                  {wrongGuesses >= 3 && (
+                    <ellipse cx="300" cy="140" rx="40" ry="28" fill="rgba(69,183,209,0.45)" />
+                  )}
+                  {wrongGuesses >= 4 && (
+                    <ellipse cx="260" cy="210" rx="38" ry="22" fill="rgba(150,206,180,0.45)" />
+                  )}
+                  {wrongGuesses >= 5 && (
+                    <ellipse cx="150" cy="230" rx="30" ry="18" fill="rgba(221,160,221,0.45)" />
+                  )}
+                </svg>
               </div>
               <div className="text-center mt-4">
                 <Badge variant={wrongGuesses >= MAX_WRONG_GUESSES ? "destructive" : "secondary"}>
