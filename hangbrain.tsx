@@ -193,7 +193,7 @@ export default function Component() {
     setGuessedLetters(newGuessedLetters)
 
     if (!currentWord.includes(letter)) {
-      setWrongGuesses((prev) => prev + 1)
+      setWrongGuesses((prev: number) => prev + 1)
     }
 
     setGuess("")
@@ -202,6 +202,14 @@ export default function Component() {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleGuess()
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.slice(0, 1).toLowerCase()
+    // Don't allow already guessed letters
+    if (!guessedLetters.includes(value)) {
+      setGuess(value)
     }
   }
 
@@ -220,6 +228,44 @@ export default function Component() {
 
   // Remove the BrainDrawing component and use an image instead
 
+  const getBrainOverlayStyle = () => {
+    const overlayColors = [
+      'rgba(255, 107, 107, 0)', // 0 wrong guesses - no overlay
+      'rgba(255, 107, 107, 0.3)', // 1 wrong guess - frontal lobe (red)
+      'rgba(78, 205, 196, 0.3)', // 2 wrong guesses - parietal lobe (teal)
+      'rgba(69, 183, 209, 0.3)', // 3 wrong guesses - temporal lobe (blue)
+      'rgba(150, 206, 180, 0.3)', // 4 wrong guesses - occipital lobe (green)
+      'rgba(221, 160, 221, 0.3)', // 5 wrong guesses - cerebellum (purple)
+    ]
+    
+    return {
+      position: 'relative' as const,
+      display: 'inline-block' as const,
+    }
+  }
+
+  const getOverlayStyle = () => {
+    const overlayColors = [
+      'rgba(255, 107, 107, 0)', // 0 wrong guesses - no overlay
+      'rgba(255, 107, 107, 0.3)', // 1 wrong guess - frontal lobe (red)
+      'rgba(78, 205, 196, 0.3)', // 2 wrong guesses - parietal lobe (teal)
+      'rgba(69, 183, 209, 0.3)', // 3 wrong guesses - temporal lobe (blue)
+      'rgba(150, 206, 180, 0.3)', // 4 wrong guesses - occipital lobe (green)
+      'rgba(221, 160, 221, 0.3)', // 5 wrong guesses - cerebellum (purple)
+    ]
+    
+    return {
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: overlayColors[Math.min(wrongGuesses, overlayColors.length - 1)],
+      pointerEvents: 'none' as const,
+      transition: 'background-color 0.3s ease',
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
       <div className="max-w-4xl mx-auto">
@@ -236,7 +282,10 @@ export default function Component() {
               <CardTitle className="text-center">Brain Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <img src="/brain.png" alt="Brain" className="mx-auto" style={{ width: 400, height: 300 }} />
+              <div style={getBrainOverlayStyle()}>
+                <img src="/brain.png" alt="Brain" className="mx-auto" style={{ width: 400, height: 300 }} />
+                <div style={getOverlayStyle()}></div>
+              </div>
               <div className="text-center mt-4">
                 <Badge variant={wrongGuesses >= MAX_WRONG_GUESSES ? "destructive" : "secondary"}>
                   Wrong guesses: {wrongGuesses}/{MAX_WRONG_GUESSES}
@@ -263,11 +312,12 @@ export default function Component() {
                     <Input
                       type="text"
                       value={guess}
-                      onChange={(e) => setGuess(e.target.value.slice(0, 1))}
+                      onChange={handleInputChange}
                       onKeyPress={handleKeyPress}
                       placeholder="Enter a letter"
                       className="text-center text-lg"
                       maxLength={1}
+                      disabled={guessedLetters.includes(guess.toLowerCase())}
                     />
                     <Button onClick={handleGuess} disabled={!guess || guessedLetters.includes(guess.toLowerCase())}>
                       Guess
@@ -277,7 +327,7 @@ export default function Component() {
                   <div>
                     <p className="text-sm font-medium mb-2">Guessed letters:</p>
                     <div className="flex flex-wrap gap-1">
-                      {guessedLetters.map((letter) => (
+                      {guessedLetters.map((letter: string) => (
                         <Badge key={letter} variant={currentWord.includes(letter) ? "default" : "destructive"}>
                           {letter.toUpperCase()}
                         </Badge>
