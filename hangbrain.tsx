@@ -161,7 +161,7 @@ const BRAIN_REGIONS = [
   "ependymal",
 ]
 
-const MAX_WRONG_GUESSES = 5
+const MAX_WRONG_GUESSES = 6
 
 export default function Component() {
   const [currentWord, setCurrentWord] = useState("")
@@ -193,7 +193,7 @@ export default function Component() {
     setGuessedLetters(newGuessedLetters)
 
     if (!currentWord.includes(letter)) {
-      setWrongGuesses((prev) => prev + 1)
+      setWrongGuesses((prev: number) => prev + 1)
     }
 
     setGuess("")
@@ -202,6 +202,14 @@ export default function Component() {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleGuess()
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.slice(0, 1).toLowerCase()
+    // Don't allow already guessed letters
+    if (!guessedLetters.includes(value)) {
+      setGuess(value)
     }
   }
 
@@ -218,114 +226,44 @@ export default function Component() {
     .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
     .join(" ")
 
-  const BrainDrawing = () => {
-    return (
-      <svg width="400" height="300" viewBox="0 0 400 300" className="mx-auto">
-        {/* Brain outline and structure - always visible */}
-        <g fill="none" stroke="#d1d5db" strokeWidth="1.5">
-          {/* Main cerebrum outline */}
-          <path d="M80 120 C75 90, 85 60, 110 45 C130 35, 155 30, 180 32 C210 35, 240 40, 270 50 C300 65, 320 85, 335 110 C345 130, 350 150, 345 170 C340 190, 330 205, 315 215 C300 225, 280 230, 260 235 L240 240 C220 242, 200 240, 180 235 C160 230, 140 220, 125 205 C110 190, 100 170, 95 150 C90 135, 85 125, 80 120 Z" />
+  // Remove the BrainDrawing component and use an image instead
 
-          {/* Cerebellum outline */}
-          <path d="M280 210 C290 205, 310 208, 325 215 C340 225, 345 240, 340 250 C335 260, 325 265, 310 267 C295 268, 280 265, 270 258 C265 250, 268 240, 275 230 C278 220, 280 215, 280 210 Z" />
+  const getBrainOverlayStyle = () => {
+    const overlayColors = [
+      'rgba(255, 107, 107, 0)', // 0 wrong guesses - no overlay
+      'rgba(255, 107, 107, 0.3)', // 1 wrong guess - frontal lobe (red)
+      'rgba(78, 205, 196, 0.3)', // 2 wrong guesses - parietal lobe (teal)
+      'rgba(69, 183, 209, 0.3)', // 3 wrong guesses - temporal lobe (blue)
+      'rgba(150, 206, 180, 0.3)', // 4 wrong guesses - occipital lobe (green)
+      'rgba(221, 160, 221, 0.3)', // 5 wrong guesses - cerebellum (purple)
+    ]
+    
+    return {
+      position: 'relative' as const,
+      display: 'inline-block' as const,
+    }
+  }
 
-          {/* Brainstem */}
-          <path d="M240 240 C245 245, 248 255, 250 265 C252 275, 250 285, 245 290 C240 292, 235 290, 232 285 C230 275, 232 265, 235 255 C237 245, 240 240, 240 240 Z" />
-
-          {/* Major sulci (brain folds) */}
-          <path d="M140 80 C160 85, 180 95, 200 110 C220 125, 240 140, 260 155" strokeDasharray="2,2" opacity="0.6" />
-          <path
-            d="M110 130 C140 125, 170 128, 200 135 C230 142, 260 150, 290 160"
-            strokeDasharray="2,2"
-            opacity="0.6"
-          />
-          <path d="M180 60 C185 80, 190 100, 195 120 C200 140, 205 160, 210 180" strokeDasharray="2,2" opacity="0.6" />
-
-          {/* Corpus callosum */}
-          <ellipse cx="200" cy="140" rx="40" ry="8" strokeDasharray="3,3" opacity="0.4" />
-        </g>
-
-        {/* Brain regions that get colored with wrong guesses */}
-
-        {/* Frontal lobe */}
-        {wrongGuesses >= 1 && (
-          <path
-            d="M80 120 C75 90, 85 60, 110 45 C130 35, 155 30, 180 32 C185 50, 190 70, 195 90 C200 110, 195 130, 185 145 C170 150, 155 148, 140 145 C125 140, 110 135, 100 128 C90 125, 85 122, 80 120 Z"
-            fill="#ff6b6b"
-            stroke="#e03131"
-            strokeWidth="1"
-            opacity="0.75"
-          />
-        )}
-
-        {/* Parietal lobe */}
-        {wrongGuesses >= 2 && (
-          <path
-            d="M180 32 C210 35, 240 40, 270 50 C300 65, 320 85, 335 110 C340 130, 335 145, 325 155 C310 165, 290 160, 270 155 C250 150, 230 145, 210 140 C200 135, 195 125, 195 115 C195 100, 190 85, 185 70 C182 50, 180 40, 180 32 Z"
-            fill="#4ecdc4"
-            stroke="#26a69a"
-            strokeWidth="1"
-            opacity="0.75"
-          />
-        )}
-
-        {/* Temporal lobe */}
-        {wrongGuesses >= 3 && (
-          <path
-            d="M140 145 C155 148, 170 150, 185 145 C200 140, 215 145, 230 150 C245 155, 260 160, 275 165 C285 175, 290 190, 285 205 C280 220, 270 230, 255 235 C240 238, 225 235, 210 230 C195 225, 180 218, 165 210 C150 200, 140 185, 135 170 C132 160, 135 152, 140 145 Z"
-            fill="#45b7d1"
-            stroke="#2196f3"
-            strokeWidth="1"
-            opacity="0.75"
-          />
-        )}
-
-        {/* Occipital lobe */}
-        {wrongGuesses >= 4 && (
-          <path
-            d="M325 155 C335 165, 345 180, 345 195 C340 210, 330 220, 315 225 C300 228, 285 225, 275 218 C270 210, 275 200, 280 190 C285 180, 290 170, 300 162 C310 158, 318 156, 325 155 Z"
-            fill="#96ceb4"
-            stroke="#4caf50"
-            strokeWidth="1"
-            opacity="0.75"
-          />
-        )}
-
-        {/* Cerebellum */}
-        {wrongGuesses >= 5 && (
-          <path
-            d="M280 210 C290 205, 310 208, 325 215 C340 225, 345 240, 340 250 C335 260, 325 265, 310 267 C295 268, 280 265, 270 258 C265 250, 268 240, 275 230 C278 220, 280 215, 280 210 Z"
-            fill="#dda0dd"
-            stroke="#9c27b0"
-            strokeWidth="1"
-            opacity="0.75"
-          />
-        )}
-
-        {/* Additional anatomical details */}
-        <g fill="none" stroke="#9ca3af" strokeWidth="0.8" opacity="0.5">
-          {/* Gyri (brain ridges) */}
-          <path d="M120 70 C140 75, 160 80, 180 85" />
-          <path d="M125 95 C145 100, 165 105, 185 110" />
-          <path d="M130 115 C150 120, 170 125, 190 130" />
-          <path d="M200 70 C220 75, 240 80, 260 85" />
-          <path d="M205 95 C225 100, 245 105, 265 110" />
-          <path d="M210 115 C230 120, 250 125, 270 130" />
-
-          {/* Cerebellum folds */}
-          <path d="M285 225 C295 228, 305 230, 315 232" />
-          <path d="M290 235 C300 238, 310 240, 320 242" />
-          <path d="M295 245 C305 248, 315 250, 325 252" />
-        </g>
-
-        {/* Brain labels (small and subtle) */}
-        <g fill="#6b7280" fontSize="10" fontFamily="Arial, sans-serif">
-          <text x="200" y="20" textAnchor="middle" className="font-semibold">
-            Lateral View
-          </text>
-        </g>
-      </svg>
-    )
+  const getOverlayStyle = () => {
+    const overlayColors = [
+      'rgba(255, 107, 107, 0)', // 0 wrong guesses - no overlay
+      'rgba(255, 107, 107, 0.3)', // 1 wrong guess - frontal lobe (red)
+      'rgba(78, 205, 196, 0.3)', // 2 wrong guesses - parietal lobe (teal)
+      'rgba(69, 183, 209, 0.3)', // 3 wrong guesses - temporal lobe (blue)
+      'rgba(150, 206, 180, 0.3)', // 4 wrong guesses - occipital lobe (green)
+      'rgba(221, 160, 221, 0.3)', // 5 wrong guesses - cerebellum (purple)
+    ]
+    
+    return {
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: overlayColors[Math.min(wrongGuesses, overlayColors.length - 1)],
+      pointerEvents: 'none' as const,
+      transition: 'background-color 0.3s ease',
+    }
   }
 
   return (
@@ -344,7 +282,33 @@ export default function Component() {
               <CardTitle className="text-center">Brain Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <BrainDrawing />
+              <div style={{ position: 'relative', width: 400, height: 300 }}>
+                <img src="/brain.png" alt="Brain" style={{ width: 400, height: 300, display: 'block' }} />
+                <svg
+                  width={400}
+                  height={300}
+                  style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+                >
+                  {wrongGuesses >= 1 && (
+                    <rect x="0" y="0" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                  )}
+                  {wrongGuesses >= 2 && (
+                    <rect x="0" y="50" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                  )}
+                  {wrongGuesses >= 3 && (
+                    <rect x="0" y="100" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                  )}
+                  {wrongGuesses >= 4 && (
+                    <rect x="0" y="150" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                  )}
+                  {wrongGuesses >= 5 && (
+                    <rect x="0" y="200" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                  )}
+                  {wrongGuesses >= 6 && (
+                    <rect x="0" y="250" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                  )}
+                </svg>
+              </div>
               <div className="text-center mt-4">
                 <Badge variant={wrongGuesses >= MAX_WRONG_GUESSES ? "destructive" : "secondary"}>
                   Wrong guesses: {wrongGuesses}/{MAX_WRONG_GUESSES}
@@ -371,11 +335,12 @@ export default function Component() {
                     <Input
                       type="text"
                       value={guess}
-                      onChange={(e) => setGuess(e.target.value.slice(0, 1))}
+                      onChange={handleInputChange}
                       onKeyPress={handleKeyPress}
                       placeholder="Enter a letter"
                       className="text-center text-lg"
                       maxLength={1}
+                      disabled={guessedLetters.includes(guess.toLowerCase())}
                     />
                     <Button onClick={handleGuess} disabled={!guess || guessedLetters.includes(guess.toLowerCase())}>
                       Guess
@@ -385,7 +350,7 @@ export default function Component() {
                   <div>
                     <p className="text-sm font-medium mb-2">Guessed letters:</p>
                     <div className="flex flex-wrap gap-1">
-                      {guessedLetters.map((letter) => (
+                      {guessedLetters.map((letter: string) => (
                         <Badge key={letter} variant={currentWord.includes(letter) ? "default" : "destructive"}>
                           {letter.toUpperCase()}
                         </Badge>
