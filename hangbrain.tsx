@@ -290,22 +290,22 @@ export default function Component() {
                   style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
                 >
                   {wrongGuesses >= 1 && (
-                    <rect x="0" y="0" width="400" height="50" fill="rgba(255,107,107,0.35)" />
+                    <rect x="0" y="0" width="400" height="50" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 2 && (
-                    <rect x="0" y="50" width="400" height="50" fill="rgba(78,205,196,0.35)" />
+                    <rect x="0" y="50" width="400" height="50" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 3 && (
-                    <rect x="0" y="100" width="400" height="50" fill="rgba(69,183,209,0.35)" />
+                    <rect x="0" y="100" width="400" height="50" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 4 && (
-                    <rect x="0" y="150" width="400" height="50" fill="rgba(150,206,180,0.35)" />
+                    <rect x="0" y="150" width="400" height="50" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 5 && (
-                    <rect x="0" y="200" width="400" height="50" fill="rgba(221,160,221,0.35)" />
+                    <rect x="0" y="200" width="400" height="50" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 6 && (
-                    <rect x="0" y="250" width="400" height="50" fill="rgba(80,80,80,0.35)" />
+                    <rect x="0" y="250" width="400" height="50" fill="rgba(255,0,0,0.35)" />
                   )}
                 </svg>
               </div>
