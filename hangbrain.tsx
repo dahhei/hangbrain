@@ -161,7 +161,7 @@ const BRAIN_REGIONS = [
   "ependymal",
 ]
 
-const MAX_WRONG_GUESSES = 5
+const MAX_WRONG_GUESSES = 6
 
 export default function Component() {
   const [currentWord, setCurrentWord] = useState("")
@@ -290,19 +290,22 @@ export default function Component() {
                   style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
                 >
                   {wrongGuesses >= 1 && (
-                    <ellipse cx="110" cy="110" rx="55" ry="38" fill="rgba(255,107,107,0.45)" />
+                    <ellipse cx="110" cy="110" rx="60" ry="45" fill="rgba(255,107,107,0.35)" />
                   )}
                   {wrongGuesses >= 2 && (
-                    <ellipse cx="220" cy="90" rx="45" ry="30" fill="rgba(78,205,196,0.45)" />
+                    <ellipse cx="220" cy="90" rx="60" ry="40" fill="rgba(78,205,196,0.35)" />
                   )}
                   {wrongGuesses >= 3 && (
-                    <ellipse cx="300" cy="140" rx="40" ry="28" fill="rgba(69,183,209,0.45)" />
+                    <ellipse cx="300" cy="140" rx="60" ry="40" fill="rgba(69,183,209,0.35)" />
                   )}
                   {wrongGuesses >= 4 && (
-                    <ellipse cx="260" cy="210" rx="38" ry="22" fill="rgba(150,206,180,0.45)" />
+                    <ellipse cx="260" cy="210" rx="60" ry="35" fill="rgba(150,206,180,0.35)" />
                   )}
                   {wrongGuesses >= 5 && (
-                    <ellipse cx="150" cy="230" rx="30" ry="18" fill="rgba(221,160,221,0.45)" />
+                    <ellipse cx="150" cy="230" rx="60" ry="30" fill="rgba(221,160,221,0.35)" />
+                  )}
+                  {wrongGuesses >= 6 && (
+                    <ellipse cx="200" cy="150" rx="200" ry="120" fill="rgba(80,80,80,0.35)" />
                   )}
                 </svg>
               </div>
