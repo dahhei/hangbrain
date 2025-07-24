@@ -268,7 +268,7 @@ export default function Component() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-screen-xl mx-auto">
         <Card className="mb-6">
           <CardHeader className="text-center">
             <CardTitle className="text-4xl font-bold text-purple-700">🧠 HangBrain</CardTitle>
@@ -323,7 +323,7 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 rounded-lg overflow-x-auto whitespace-nowrap">
+                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 rounded-lg whitespace-nowrap">
                   {displayWord}
                 </div>
                 <p className="text-sm text-gray-600">Brain Region ({currentWord.length} letters)</p>
