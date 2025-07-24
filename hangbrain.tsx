@@ -268,15 +268,15 @@ export default function Component() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-end mb-4">
           <ModeToggle />
         </div>
         <Card className="mb-6">
           <CardHeader className="text-center">
-            <CardTitle className="text-4xl font-bold text-purple-700">🧠 HangBrain</CardTitle>
-            <p className="text-gray-600">Guess the brain region before all areas are colored!</p>
+            <CardTitle className="text-4xl font-bold text-purple-700 dark:text-purple-300">🧠 HangBrain</CardTitle>
+            <p className="text-gray-600 dark:text-gray-300">Guess the brain region before all areas are colored!</p>
           </CardHeader>
         </Card>
 
@@ -327,10 +327,10 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 rounded-lg overflow-x-auto whitespace-nowrap">
+                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-x-auto whitespace-nowrap">
                   {displayWord}
                 </div>
-                <p className="text-sm text-gray-600">Brain Region ({currentWord.length} letters)</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({currentWord.length} letters)</p>
               </div>
 
               {gameStatus === "playing" && (
@@ -366,7 +366,7 @@ export default function Component() {
 
               {gameStatus === "won" && (
                 <div className="text-center space-y-4">
-                  <div className="text-2xl font-bold text-green-600">🎉 Congratulations!</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">🎉 Congratulations!</div>
                   <p>
                     You correctly guessed: <strong>{currentWord}</strong>
                   </p>
@@ -378,7 +378,7 @@ export default function Component() {
 
               {gameStatus === "lost" && (
                 <div className="text-center space-y-4">
-                  <div className="text-2xl font-bold text-red-600">💀 Game Over!</div>
+                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">💀 Game Over!</div>
                   <p>
                     The brain region was: <strong>{currentWord}</strong>
                   </p>
@@ -394,7 +394,7 @@ export default function Component() {
         <Card className="mt-6">
           <CardContent className="pt-6">
             <h3 className="font-bold mb-2">How to Play:</h3>
-            <ul className="text-sm text-gray-600 space-y-1">
+            <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
               <li>• Guess letters to reveal the hidden brain region</li>
               <li>• Each wrong guess colors a different brain region</li>
               <li>• Win by guessing the word before all regions are colored</li>
