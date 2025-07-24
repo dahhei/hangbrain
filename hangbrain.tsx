@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { ModeToggle } from "@/components/mode-toggle"
 
 const BRAIN_REGIONS = [
   // Cerebral cortex regions
@@ -269,6 +270,9 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
       <div className="max-w-4xl mx-auto">
+        <div className="flex justify-end mb-4">
+          <ModeToggle />
+        </div>
         <Card className="mb-6">
           <CardHeader className="text-center">
             <CardTitle className="text-4xl font-bold text-purple-700">🧠 HangBrain</CardTitle>
