@@ -323,7 +323,7 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 rounded-lg">
+                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 rounded-lg overflow-x-auto whitespace-nowrap">
                   {displayWord}
                 </div>
                 <p className="text-sm text-gray-600">Brain Region ({currentWord.length} letters)</p>
