@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ModeToggle } from "@/components/mode-toggle"
+import { toast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
 
 const BRAIN_REGIONS = [
   // Cerebral cortex regions
@@ -170,6 +172,7 @@ export default function Component() {
   const [wrongGuesses, setWrongGuesses] = useState(0)
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">("playing")
   const [guess, setGuess] = useState("")
+  const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i))
 
   const initializeGame = () => {
     const randomWord = BRAIN_REGIONS[Math.floor(Math.random() * BRAIN_REGIONS.length)]
@@ -185,7 +188,12 @@ export default function Component() {
   }, [])
 
   const handleGuess = () => {
-    if (!guess || guess.length !== 1 || guessedLetters.includes(guess.toLowerCase())) {
+    if (!guess || guess.length !== 1) {
+      return
+    }
+
+    if (guessedLetters.includes(guess.toLowerCase())) {
+      toast({ title: "You already tried that letter" })
       return
     }
 
@@ -209,9 +217,12 @@ export default function Component() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.slice(0, 1).toLowerCase()
     // Don't allow already guessed letters
-    if (!guessedLetters.includes(value)) {
-      setGuess(value)
+    if (guessedLetters.includes(value)) {
+      toast({ title: "You already tried that letter" })
+      return
     }
+
+    setGuess(value)
   }
 
   useEffect(() => {
@@ -352,13 +363,26 @@ export default function Component() {
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium mb-2">Guessed letters:</p>
+                    <p className="text-sm font-medium mb-2">Letters:</p>
                     <div className="flex flex-wrap gap-1">
-                      {guessedLetters.map((letter: string) => (
-                        <Badge key={letter} variant={currentWord.includes(letter) ? "default" : "destructive"}>
-                          {letter.toUpperCase()}
-                        </Badge>
-                      ))}
+                      {alphabet.map((letter) => {
+                        const guessed = guessedLetters.includes(letter)
+                        const correct = guessed && currentWord.includes(letter)
+                        return (
+                          <Badge
+                            key={letter}
+                            className={cn(
+                              guessed
+                                ? correct
+                                  ? "bg-green-500 text-white"
+                                  : "bg-red-500 text-white"
+                                : "bg-gray-200 text-gray-700"
+                            )}
+                          >
+                            {letter.toUpperCase()}
+                          </Badge>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
