@@ -2,9 +2,8 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "@/hooks/use-toast"
@@ -158,7 +157,6 @@ export default function Component() {
   const [guessedLetters, setGuessedLetters] = useState<string[]>([])
   const [wrongGuesses, setWrongGuesses] = useState(0)
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">("playing")
-  const [guess, setGuess] = useState("")
   const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i))
 
   const initializeGame = () => {
@@ -167,50 +165,46 @@ export default function Component() {
     setGuessedLetters([])
     setWrongGuesses(0)
     setGameStatus("playing")
-    setGuess("")
   }
 
   useEffect(() => {
     initializeGame()
   }, [])
 
-  const handleGuess = () => {
-    if (!guess || guess.length !== 1) {
-      return
+  const handleGuess = useCallback(
+    (rawLetter: string) => {
+      const letter = rawLetter.toLowerCase()
+      if (!letter || letter.length !== 1 || !/^[a-z]$/.test(letter)) {
+        return
+      }
+
+      if (guessedLetters.includes(letter)) {
+        toast({ title: "You already tried that letter" })
+        return
+      }
+
+      const newGuessedLetters = [...guessedLetters, letter]
+      setGuessedLetters(newGuessedLetters)
+
+      if (!currentWord.includes(letter)) {
+        setWrongGuesses((prev: number) => prev + 1)
+      }
+    },
+    [guessedLetters, currentWord]
+  )
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (gameStatus !== "playing") return
+      const key = e.key
+      if (/^[a-zA-Z]$/.test(key)) {
+        handleGuess(key)
+      }
     }
 
-    if (guessedLetters.includes(guess.toLowerCase())) {
-      toast({ title: "You already tried that letter" })
-      return
-    }
-
-    const letter = guess.toLowerCase()
-    const newGuessedLetters = [...guessedLetters, letter]
-    setGuessedLetters(newGuessedLetters)
-
-    if (!currentWord.includes(letter)) {
-      setWrongGuesses((prev: number) => prev + 1)
-    }
-
-    setGuess("")
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleGuess()
-    }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.slice(0, 1).toLowerCase()
-    // Don't allow already guessed letters
-    if (guessedLetters.includes(value)) {
-      toast({ title: "You already tried that letter" })
-      return
-    }
-
-    setGuess(value)
-  }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleGuess, gameStatus])
 
   useEffect(() => {
     if (wrongGuesses >= MAX_WRONG_GUESSES) {
@@ -330,22 +324,6 @@ export default function Component() {
 
               {gameStatus === "playing" && (
                 <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      value={guess}
-                      onChange={handleInputChange}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Enter a letter"
-                      className="text-center text-lg"
-                      maxLength={1}
-                      disabled={guessedLetters.includes(guess.toLowerCase())}
-                    />
-                    <Button onClick={handleGuess} disabled={!guess || guessedLetters.includes(guess.toLowerCase())}>
-                      Guess
-                    </Button>
-                  </div>
-
                   <div>
                     <p className="text-sm font-medium mb-2">Letters:</p>
                     <div className="flex flex-wrap gap-1">
@@ -355,12 +333,13 @@ export default function Component() {
                         return (
                           <Badge
                             key={letter}
+                            onClick={() => handleGuess(letter)}
                             className={cn(
                               guessed
                                 ? correct
-                                  ? "bg-green-500 text-white"
-                                  : "bg-red-500 text-white"
-                                : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+                                  ? "bg-green-500 text-white cursor-not-allowed"
+                                  : "bg-red-500 text-white cursor-not-allowed"
+                                : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 cursor-pointer"
                             )}
                           >
                             {letter.toUpperCase()}
@@ -403,7 +382,7 @@ export default function Component() {
           <CardContent className="pt-6">
             <h3 className="font-bold mb-2">How to Play:</h3>
             <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-              <li>• Guess letters to reveal the hidden brain region</li>
+              <li>• Type or click letters to reveal the hidden brain region</li>
               <li>• Each wrong guess colors a different brain region</li>
               <li>• Win by guessing the word before all regions are colored</li>
               <li>• You have {MAX_WRONG_GUESSES} wrong guesses before you lose</li>
