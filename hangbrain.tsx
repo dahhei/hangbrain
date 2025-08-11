@@ -245,27 +245,44 @@ export default function Component() {
 
   useEffect(() => {
     const fetchRegionInfo = async () => {
-      if (gameStatus === "won" || gameStatus === "lost") {
-        try {
-          const response = await fetch(
-            `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(
-              currentWord,
-            )}&limit=1&namespace=0&format=json&origin=*`,
-          )
-          const data = await response.json()
-          if (data && data[1] && data[1].length > 0) {
-            setRegionInfo({
-              title: data[1][0],
-              description: data[2][0] || "",
-              url: data[3][0] || "",
-            })
-          } else {
-            setRegionInfo(null)
-          }
-        } catch (error) {
+      if (gameStatus !== "won" && gameStatus !== "lost") {
+        setRegionInfo(null)
+        return
+      }
+
+      try {
+        const searchResponse = await fetch(
+          `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(
+            currentWord,
+          )}&limit=1&namespace=0&format=json&origin=*`,
+        )
+        const searchData = await searchResponse.json()
+        if (!searchData || !searchData[1] || searchData[1].length === 0) {
           setRegionInfo(null)
+          return
         }
-      } else {
+
+        const title = searchData[1][0]
+        try {
+          const summaryResponse = await fetch(
+            `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
+          )
+          if (!summaryResponse.ok) throw new Error("Summary request failed")
+          const summaryData = await summaryResponse.json()
+          setRegionInfo({
+            title: summaryData.title || title,
+            description: summaryData.extract || searchData[2][0] || "",
+            url:
+              summaryData.content_urls?.desktop?.page || searchData[3][0] || "",
+          })
+        } catch {
+          setRegionInfo({
+            title,
+            description: searchData[2][0] || "",
+            url: searchData[3][0] || "",
+          })
+        }
+      } catch {
         setRegionInfo(null)
       }
     }
