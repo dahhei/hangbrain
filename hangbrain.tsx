@@ -427,7 +427,9 @@ export default function Component() {
                   </p>
                   {regionInfo && (
                     <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                      <p>{regionInfo.description}</p>
+                      <p>
+                        <strong>About {regionInfo.title}:</strong> {regionInfo.description}
+                      </p>
                       {regionInfo.url && (
                         <a
                           href={regionInfo.url}
@@ -454,7 +456,9 @@ export default function Component() {
                   </p>
                   {regionInfo && (
                     <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                      <p>{regionInfo.description}</p>
+                      <p>
+                        <strong>About {regionInfo.title}:</strong> {regionInfo.description}
+                      </p>
                       {regionInfo.url && (
                         <a
                           href={regionInfo.url}
