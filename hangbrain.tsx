@@ -280,30 +280,53 @@ export default function Component() {
           "cerebral",
           "spinal",
         ]
-        let index = titles.findIndex((_, i) => {
+        let info: { title: string; description: string; url: string } | null = null
+
+        for (let i = 0; i < titles.length; i++) {
           const text = `${titles[i]} ${descriptions[i]}`.toLowerCase()
-          return keywords.some((kw) => text.includes(kw))
-        })
-        if (index === -1) index = 0
-        const title = titles[index]
-        try {
-          const summaryResponse = await fetch(
-            `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
-          )
-          if (!summaryResponse.ok) throw new Error("Summary request failed")
-          const summaryData = await summaryResponse.json()
-          setRegionInfo({
-            title: summaryData.title || title,
-            description: summaryData.extract || descriptions[index] || "",
-            url: summaryData.content_urls?.desktop?.page || urls[index] || "",
-          })
-        } catch {
-          setRegionInfo({
-            title,
-            description: descriptions[index] || "",
-            url: urls[index] || "",
-          })
+          if (!keywords.some((kw) => text.includes(kw))) continue
+          try {
+            const summaryResponse = await fetch(
+              `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titles[i])}`,
+            )
+            if (!summaryResponse.ok) continue
+            const summaryData = await summaryResponse.json()
+            const summaryText = `${summaryData.title || titles[i]} ${summaryData.extract || ""}`.toLowerCase()
+            if (keywords.some((kw) => summaryText.includes(kw))) {
+              info = {
+                title: summaryData.title || titles[i],
+                description: summaryData.extract || descriptions[i] || "",
+                url: summaryData.content_urls?.desktop?.page || urls[i] || "",
+              }
+              break
+            }
+          } catch {
+            // ignore and try next result
+          }
         }
+
+        if (!info) {
+          const fallbackTitle = titles[0]
+          try {
+            const summaryResponse = await fetch(
+              `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(fallbackTitle)}`,
+            )
+            const summaryData = await summaryResponse.json()
+            info = {
+              title: summaryData.title || fallbackTitle,
+              description: summaryData.extract || descriptions[0] || "",
+              url: summaryData.content_urls?.desktop?.page || urls[0] || "",
+            }
+          } catch {
+            info = {
+              title: fallbackTitle,
+              description: descriptions[0] || "",
+              url: urls[0] || "",
+            }
+          }
+        }
+
+        setRegionInfo(info)
       } catch {
         setRegionInfo(null)
       }
@@ -481,6 +504,16 @@ export default function Component() {
                       )}
                     </div>
                   )}
+                  <a
+                    href={`https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(
+                      currentWord + " brain",
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-blue-600 block"
+                  >
+                    Not the correct page about the brain region? Click here to find the correct description
+                  </a>
                   <Button onClick={initializeGame} className="w-full">
                     Play Again
                   </Button>
@@ -510,6 +543,16 @@ export default function Component() {
                       )}
                     </div>
                   )}
+                  <a
+                    href={`https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(
+                      currentWord + " brain",
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-blue-600 block"
+                  >
+                    Not the correct page about the brain region? Click here to find the correct description
+                  </a>
                   <Button onClick={initializeGame} className="w-full">
                     Try Again
                   </Button>
