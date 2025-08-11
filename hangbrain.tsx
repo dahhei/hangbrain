@@ -159,6 +159,10 @@ export default function Component() {
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">("playing")
   const [wins, setWins] = useState(0)
   const [losses, setLosses] = useState(0)
+  const [regionInfo, setRegionInfo] = useState<
+    | { title: string; description: string; url: string }
+    | null
+  >(null)
   const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i))
 
   const initializeGame = () => {
@@ -238,6 +242,98 @@ export default function Component() {
       })
     }
   }, [gameStatus])
+
+  useEffect(() => {
+    const fetchRegionInfo = async () => {
+      if (gameStatus !== "won" && gameStatus !== "lost") {
+        setRegionInfo(null)
+        return
+      }
+
+      try {
+        const searchResponse = await fetch(
+          `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(
+            currentWord,
+          )}&limit=5&namespace=0&format=json&origin=*`,
+        )
+        const searchData = await searchResponse.json()
+        if (!searchData || !searchData[1] || searchData[1].length === 0) {
+          setRegionInfo(null)
+          return
+        }
+
+        const titles: string[] = searchData[1]
+        const descriptions: string[] = searchData[2]
+        const urls: string[] = searchData[3]
+        const keywords = [
+          "brain",
+          "neuro",
+          "cortex",
+          "lobe",
+          "nucleus",
+          "gyrus",
+          "nerve",
+          "cerebellum",
+          "thalamus",
+          "midbrain",
+          "hypothalamus",
+          "cerebral",
+          "spinal",
+        ]
+        let info: { title: string; description: string; url: string } | null = null
+
+        for (let i = 0; i < titles.length; i++) {
+          const text = `${titles[i]} ${descriptions[i]}`.toLowerCase()
+          if (!keywords.some((kw) => text.includes(kw))) continue
+          try {
+            const summaryResponse = await fetch(
+              `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(titles[i])}`,
+            )
+            if (!summaryResponse.ok) continue
+            const summaryData = await summaryResponse.json()
+            const summaryText = `${summaryData.title || titles[i]} ${summaryData.extract || ""}`.toLowerCase()
+            if (keywords.some((kw) => summaryText.includes(kw))) {
+              info = {
+                title: summaryData.title || titles[i],
+                description: summaryData.extract || descriptions[i] || "",
+                url: summaryData.content_urls?.desktop?.page || urls[i] || "",
+              }
+              break
+            }
+          } catch {
+            // ignore and try next result
+          }
+        }
+
+        if (!info) {
+          const fallbackTitle = titles[0]
+          try {
+            const summaryResponse = await fetch(
+              `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(fallbackTitle)}`,
+            )
+            const summaryData = await summaryResponse.json()
+            info = {
+              title: summaryData.title || fallbackTitle,
+              description: summaryData.extract || descriptions[0] || "",
+              url: summaryData.content_urls?.desktop?.page || urls[0] || "",
+            }
+          } catch {
+            info = {
+              title: fallbackTitle,
+              description: descriptions[0] || "",
+              url: urls[0] || "",
+            }
+          }
+        }
+
+        setRegionInfo(info)
+      } catch {
+        setRegionInfo(null)
+      }
+    }
+
+    fetchRegionInfo()
+  }, [gameStatus, currentWord])
 
   const displayWord = currentWord
     .split("")
@@ -391,9 +487,36 @@ export default function Component() {
                   <p>
                     You correctly guessed: <strong>{currentWord}</strong>
                   </p>
+                  {regionInfo && (
+                    <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                      <p>
+                        <strong>About {regionInfo.title}:</strong> {regionInfo.description}
+                      </p>
+                      {regionInfo.url && (
+                        <a
+                          href={regionInfo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-600"
+                        >
+                          Learn more on Wikipedia
+                        </a>
+                      )}
+                    </div>
+                  )}
                   <Button onClick={initializeGame} className="w-full">
                     Play Again
                   </Button>
+                  <a
+                    href={`https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(
+                      currentWord + " brain",
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-blue-600 block mt-2"
+                  >
+                    Not the correct page about the brain region? Click here to find the correct description
+                  </a>
                 </div>
               )}
 
@@ -403,9 +526,36 @@ export default function Component() {
                   <p>
                     The brain region was: <strong>{currentWord}</strong>
                   </p>
+                  {regionInfo && (
+                    <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                      <p>
+                        <strong>About {regionInfo.title}:</strong> {regionInfo.description}
+                      </p>
+                      {regionInfo.url && (
+                        <a
+                          href={regionInfo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-600"
+                        >
+                          Learn more on Wikipedia
+                        </a>
+                      )}
+                    </div>
+                  )}
                   <Button onClick={initializeGame} className="w-full">
                     Try Again
                   </Button>
+                  <a
+                    href={`https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(
+                      currentWord + " brain",
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-blue-600 block mt-2"
+                  >
+                    Not the correct page about the brain region? Click here to find the correct description
+                  </a>
                 </div>
               )}
             </CardContent>
