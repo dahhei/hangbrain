@@ -254,7 +254,7 @@ export default function Component() {
         const searchResponse = await fetch(
           `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(
             currentWord,
-          )}&limit=1&namespace=0&format=json&origin=*`,
+          )}&limit=5&namespace=0&format=json&origin=*`,
         )
         const searchData = await searchResponse.json()
         if (!searchData || !searchData[1] || searchData[1].length === 0) {
@@ -262,7 +262,30 @@ export default function Component() {
           return
         }
 
-        const title = searchData[1][0]
+        const titles: string[] = searchData[1]
+        const descriptions: string[] = searchData[2]
+        const urls: string[] = searchData[3]
+        const keywords = [
+          "brain",
+          "neuro",
+          "cortex",
+          "lobe",
+          "nucleus",
+          "gyrus",
+          "nerve",
+          "cerebellum",
+          "thalamus",
+          "midbrain",
+          "hypothalamus",
+          "cerebral",
+          "spinal",
+        ]
+        let index = titles.findIndex((_, i) => {
+          const text = `${titles[i]} ${descriptions[i]}`.toLowerCase()
+          return keywords.some((kw) => text.includes(kw))
+        })
+        if (index === -1) index = 0
+        const title = titles[index]
         try {
           const summaryResponse = await fetch(
             `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
@@ -271,15 +294,14 @@ export default function Component() {
           const summaryData = await summaryResponse.json()
           setRegionInfo({
             title: summaryData.title || title,
-            description: summaryData.extract || searchData[2][0] || "",
-            url:
-              summaryData.content_urls?.desktop?.page || searchData[3][0] || "",
+            description: summaryData.extract || descriptions[index] || "",
+            url: summaryData.content_urls?.desktop?.page || urls[index] || "",
           })
         } catch {
           setRegionInfo({
             title,
-            description: searchData[2][0] || "",
-            url: searchData[3][0] || "",
+            description: descriptions[index] || "",
+            url: urls[index] || "",
           })
         }
       } catch {
