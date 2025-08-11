@@ -134,19 +134,7 @@ const BRAIN_REGIONS = [
   "cerebrospinal",
   "blood",
   "barrier",
-
-  // Functional areas
-  "motor",
-  "sensory",
-  "visual",
-  "auditory",
-  "language",
-  "broca",
-  "wernicke",
-  "association",
-  "primary",
-  "secondary",
-  "tertiary",
+  // Functional areas removed to avoid non-region terms
 
   // Cellular components
   "neuron",
