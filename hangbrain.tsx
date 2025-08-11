@@ -157,6 +157,8 @@ export default function Component() {
   const [guessedLetters, setGuessedLetters] = useState<string[]>([])
   const [wrongGuesses, setWrongGuesses] = useState(0)
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">("playing")
+  const [wins, setWins] = useState(0)
+  const [losses, setLosses] = useState(0)
   const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i))
 
   const initializeGame = () => {
@@ -169,6 +171,13 @@ export default function Component() {
 
   useEffect(() => {
     initializeGame()
+  }, [])
+
+  useEffect(() => {
+    const storedWins = parseInt(localStorage.getItem("hangbrainWins") || "0", 10)
+    const storedLosses = parseInt(localStorage.getItem("hangbrainLosses") || "0", 10)
+    setWins(storedWins)
+    setLosses(storedLosses)
   }, [])
 
   const handleGuess = useCallback(
@@ -213,6 +222,22 @@ export default function Component() {
       setGameStatus("won")
     }
   }, [wrongGuesses, guessedLetters, currentWord])
+
+  useEffect(() => {
+    if (gameStatus === "won") {
+      setWins((prev) => {
+        const updated = prev + 1
+        localStorage.setItem("hangbrainWins", updated.toString())
+        return updated
+      })
+    } else if (gameStatus === "lost") {
+      setLosses((prev) => {
+        const updated = prev + 1
+        localStorage.setItem("hangbrainLosses", updated.toString())
+        return updated
+      })
+    }
+  }, [gameStatus])
 
   const displayWord = currentWord
     .split("")
@@ -267,6 +292,15 @@ export default function Component() {
             <CardTitle className="text-4xl font-bold text-purple-700 dark:text-purple-300">🧠 HangBrain</CardTitle>
             <p className="text-gray-600 dark:text-gray-300">Guess the brain region before all areas are colored!</p>
           </CardHeader>
+          <CardContent className="text-center space-y-2">
+            <div className="flex justify-center gap-4">
+              <Badge variant="secondary">Wins: {wins}</Badge>
+              <Badge variant="secondary">Losses: {losses}</Badge>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Stats are stored in your browser. Switching browsers or clearing your cache will reset them.
+            </p>
+          </CardContent>
         </Card>
 
         <div className="grid md:grid-cols-2 gap-6">
