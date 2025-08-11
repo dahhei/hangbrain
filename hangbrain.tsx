@@ -159,6 +159,10 @@ export default function Component() {
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">("playing")
   const [wins, setWins] = useState(0)
   const [losses, setLosses] = useState(0)
+  const [regionInfo, setRegionInfo] = useState<
+    | { title: string; description: string; url: string }
+    | null
+  >(null)
   const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i))
 
   const initializeGame = () => {
@@ -238,6 +242,36 @@ export default function Component() {
       })
     }
   }, [gameStatus])
+
+  useEffect(() => {
+    const fetchRegionInfo = async () => {
+      if (gameStatus === "won" || gameStatus === "lost") {
+        try {
+          const response = await fetch(
+            `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(
+              currentWord,
+            )}&limit=1&namespace=0&format=json&origin=*`,
+          )
+          const data = await response.json()
+          if (data && data[1] && data[1].length > 0) {
+            setRegionInfo({
+              title: data[1][0],
+              description: data[2][0] || "",
+              url: data[3][0] || "",
+            })
+          } else {
+            setRegionInfo(null)
+          }
+        } catch (error) {
+          setRegionInfo(null)
+        }
+      } else {
+        setRegionInfo(null)
+      }
+    }
+
+    fetchRegionInfo()
+  }, [gameStatus, currentWord])
 
   const displayWord = currentWord
     .split("")
@@ -391,6 +425,21 @@ export default function Component() {
                   <p>
                     You correctly guessed: <strong>{currentWord}</strong>
                   </p>
+                  {regionInfo && (
+                    <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                      <p>{regionInfo.description}</p>
+                      {regionInfo.url && (
+                        <a
+                          href={regionInfo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-600"
+                        >
+                          Learn more on Wikipedia
+                        </a>
+                      )}
+                    </div>
+                  )}
                   <Button onClick={initializeGame} className="w-full">
                     Play Again
                   </Button>
@@ -403,6 +452,21 @@ export default function Component() {
                   <p>
                     The brain region was: <strong>{currentWord}</strong>
                   </p>
+                  {regionInfo && (
+                    <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                      <p>{regionInfo.description}</p>
+                      {regionInfo.url && (
+                        <a
+                          href={regionInfo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-blue-600"
+                        >
+                          Learn more on Wikipedia
+                        </a>
+                      )}
+                    </div>
+                  )}
                   <Button onClick={initializeGame} className="w-full">
                     Try Again
                   </Button>
