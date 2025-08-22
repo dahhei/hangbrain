@@ -507,16 +507,6 @@ export default function Component() {
                   <Button onClick={initializeGame} className="w-full">
                     Play Again
                   </Button>
-                  <a
-                    href={`https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(
-                      currentWord + " brain",
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline text-blue-600 block mt-2"
-                  >
-                    Not the correct page about the brain region? Click here to find the correct description
-                  </a>
                 </div>
               )}
 
@@ -546,16 +536,6 @@ export default function Component() {
                   <Button onClick={initializeGame} className="w-full">
                     Try Again
                   </Button>
-                  <a
-                    href={`https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(
-                      currentWord + " brain",
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline text-blue-600 block mt-2"
-                  >
-                    Not the correct page about the brain region? Click here to find the correct description
-                  </a>
                 </div>
               )}
             </CardContent>
@@ -573,6 +553,20 @@ export default function Component() {
             </ul>
           </CardContent>
         </Card>
+        {(gameStatus === "won" || gameStatus === "lost") && (
+          <div className="text-center mt-4">
+            <a
+              href={`https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(
+                currentWord + " brain",
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-blue-600"
+            >
+              Not the correct page about the brain region? Click here to find the correct description
+            </a>
+          </div>
+        )}
       </div>
     </div>
   )
