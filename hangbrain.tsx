@@ -8,147 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-
-const BRAIN_REGIONS = [
-  // Cerebral cortex regions
-  "frontal",
-  "parietal",
-  "temporal",
-  "occipital",
-  "insula",
-  "cingulate",
-  "precentral",
-  "postcentral",
-  "superior",
-  "middle",
-  "inferior",
-  "angular",
-  "supramarginal",
-  "fusiform",
-  "parahippocampal",
-
-  // Subcortical structures
-  "hippocampus",
-  "amygdala",
-  "thalamus",
-  "hypothalamus",
-  "subthalamus",
-  "caudate",
-  "putamen",
-  "pallidum",
-  "striatum",
-  "claustrum",
-  "nucleus",
-  "accumbens",
-  "substantia",
-  "nigra",
-
-  // Brainstem
-  "midbrain",
-  "pons",
-  "medulla",
-  "oblongata",
-  "tegmentum",
-  "tectum",
-  "colliculus",
-  "periaqueductal",
-  "reticular",
-  "raphe",
-
-  // Cerebellum
-  "cerebellum",
-  "vermis",
-  "hemisphere",
-  "flocculus",
-  "nodulus",
-  "dentate",
-  "interposed",
-  "fastigial",
-
-  // Limbic system
-  "fornix",
-  "mammillary",
-  "septal",
-  "olfactory",
-  "piriform",
-  "entorhinal",
-  "perirhinal",
-  "retrosplenial",
-
-  // White matter tracts
-  "corpus",
-  "callosum",
-  "commissure",
-  "capsule",
-  "corona",
-  "radiata",
-  "fasciculus",
-  "cingulum",
-  "uncinate",
-  "arcuate",
-  "longitudinal",
-
-  // Ventricular system
-  "ventricle",
-  "lateral",
-  "third",
-  "fourth",
-  "aqueduct",
-  "choroid",
-
-  // Cranial nerve nuclei
-  "oculomotor",
-  "trochlear",
-  "trigeminal",
-  "abducens",
-  "facial",
-  "vestibulocochlear",
-  "glossopharyngeal",
-  "vagus",
-  "accessory",
-  "hypoglossal",
-  "olfactory",
-  "optic",
-
-  // Diencephalon
-  "epithalamus",
-  "pineal",
-  "habenula",
-  "geniculate",
-  "pulvinar",
-
-  // Additional regions
-  "brodmann",
-  "area",
-  "gyrus",
-  "sulcus",
-  "fissure",
-  "lobe",
-  "cortex",
-  "matter",
-  "gray",
-  "white",
-  "meninges",
-  "dura",
-  "arachnoid",
-  "subarachnoid",
-  "cerebrospinal",
-  "blood",
-  "barrier",
-  // Functional areas removed to avoid non-region terms
-
-  // Cellular components
-  "neuron",
-  "axon",
-  "dendrite",
-  "synapse",
-  "myelin",
-  "glial",
-  "astrocyte",
-  "oligodendrocyte",
-  "microglia",
-  "ependymal",
-]
+import { BRAIN_REGIONS } from "@/lib/brain-regions"
 
 const MAX_WRONG_GUESSES = 6
 
@@ -171,6 +31,7 @@ export default function Component() {
     setGuessedLetters([])
     setWrongGuesses(0)
     setGameStatus("playing")
+    setRegionInfo(null)
   }
 
   useEffect(() => {
@@ -199,7 +60,7 @@ export default function Component() {
       const newGuessedLetters = [...guessedLetters, letter]
       setGuessedLetters(newGuessedLetters)
 
-      if (!currentWord.includes(letter)) {
+      if (!currentWord.toLowerCase().includes(letter)) {
         setWrongGuesses((prev: number) => prev + 1)
       }
     },
@@ -222,7 +83,13 @@ export default function Component() {
   useEffect(() => {
     if (wrongGuesses >= MAX_WRONG_GUESSES) {
       setGameStatus("lost")
-    } else if (currentWord && currentWord.split("").every((letter) => guessedLetters.includes(letter))) {
+    } else if (
+      currentWord &&
+      currentWord
+        .toLowerCase()
+        .split("")
+        .every((char) => !/[a-z]/.test(char) || guessedLetters.includes(char))
+    ) {
       setGameStatus("won")
     }
   }, [wrongGuesses, guessedLetters, currentWord])
@@ -337,8 +204,16 @@ export default function Component() {
 
   const displayWord = currentWord
     .split("")
-    .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
+    .map((char) =>
+      /[a-z]/i.test(char)
+        ? guessedLetters.includes(char.toLowerCase())
+          ? char
+          : "_"
+        : char,
+    )
     .join(" ")
+
+  const letterCount = currentWord.replace(/[^a-z]/gi, "").length
 
   // Remove the BrainDrawing component and use an image instead
 
@@ -449,7 +324,7 @@ export default function Component() {
                 <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-nowrap">
                   {displayWord}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({currentWord.length} letters)</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({letterCount} letters)</p>
               </div>
 
               {gameStatus === "playing" && (
@@ -459,7 +334,7 @@ export default function Component() {
                     <div className="flex flex-wrap gap-1">
                       {alphabet.map((letter) => {
                         const guessed = guessedLetters.includes(letter)
-                        const correct = guessed && currentWord.includes(letter)
+                        const correct = guessed && currentWord.toLowerCase().includes(letter)
                         return (
                           <Badge
                             key={letter}
