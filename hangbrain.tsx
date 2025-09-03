@@ -203,13 +203,18 @@ export default function Component() {
   }, [gameStatus, currentWord])
 
   const displayWord = currentWord
-    .split("")
-    .map((char) =>
-      /[a-z]/i.test(char)
-        ? guessedLetters.includes(char.toLowerCase())
-          ? char
-          : "_"
-        : char,
+    .split(" ")
+    .map((word) =>
+      word
+        .split("")
+        .map((char) =>
+          /[a-z]/i.test(char)
+            ? guessedLetters.includes(char.toLowerCase())
+              ? char
+              : "_"
+            : char,
+        )
+        .join(""),
     )
     .join(" ")
 
