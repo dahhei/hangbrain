@@ -214,9 +214,9 @@ export default function Component() {
               : "_"
             : char,
         )
-        .join(""),
+        .join(" "),
     )
-    .join(" ")
+    .join("   ")
 
   const letterCount = currentWord.replace(/[^a-z]/gi, "").length
 
@@ -326,7 +326,7 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-nowrap">
+                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-pre">
                   {displayWord}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({letterCount} letters)</p>
