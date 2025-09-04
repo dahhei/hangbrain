@@ -285,30 +285,30 @@ export default function Component() {
               <CardTitle className="text-center">Brain Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <div style={{ position: 'relative', width: 400, height: 300 }}>
-                <img src="/brain.png" alt="Brain" style={{ width: 400, height: 300, display: 'block' }} />
+              <div style={{ position: 'relative', width: 320, height: 240 }}>
+                <img src="/brain.png" alt="Brain" style={{ width: 320, height: 240, display: 'block' }} />
                 <svg
-                  width={400}
-                  height={300}
+                  width={320}
+                  height={240}
                   style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
                 >
                   {wrongGuesses >= 1 && (
-                    <rect x="0" y="0" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="0" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 2 && (
-                    <rect x="0" y="50" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="40" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 3 && (
-                    <rect x="0" y="100" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="80" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 4 && (
-                    <rect x="0" y="150" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="120" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 5 && (
-                    <rect x="0" y="200" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="160" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 6 && (
-                    <rect x="0" y="250" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="200" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                 </svg>
               </div>
@@ -326,7 +326,7 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-pre">
+                <div className="text-2xl md:text-3xl font-mono font-bold mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-pre-wrap">
                   {displayWord}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({letterCount} letters)</p>
