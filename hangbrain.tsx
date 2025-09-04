@@ -8,147 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-
-const BRAIN_REGIONS = [
-  // Cerebral cortex regions
-  "frontal",
-  "parietal",
-  "temporal",
-  "occipital",
-  "insula",
-  "cingulate",
-  "precentral",
-  "postcentral",
-  "superior",
-  "middle",
-  "inferior",
-  "angular",
-  "supramarginal",
-  "fusiform",
-  "parahippocampal",
-
-  // Subcortical structures
-  "hippocampus",
-  "amygdala",
-  "thalamus",
-  "hypothalamus",
-  "subthalamus",
-  "caudate",
-  "putamen",
-  "pallidum",
-  "striatum",
-  "claustrum",
-  "nucleus",
-  "accumbens",
-  "substantia",
-  "nigra",
-
-  // Brainstem
-  "midbrain",
-  "pons",
-  "medulla",
-  "oblongata",
-  "tegmentum",
-  "tectum",
-  "colliculus",
-  "periaqueductal",
-  "reticular",
-  "raphe",
-
-  // Cerebellum
-  "cerebellum",
-  "vermis",
-  "hemisphere",
-  "flocculus",
-  "nodulus",
-  "dentate",
-  "interposed",
-  "fastigial",
-
-  // Limbic system
-  "fornix",
-  "mammillary",
-  "septal",
-  "olfactory",
-  "piriform",
-  "entorhinal",
-  "perirhinal",
-  "retrosplenial",
-
-  // White matter tracts
-  "corpus",
-  "callosum",
-  "commissure",
-  "capsule",
-  "corona",
-  "radiata",
-  "fasciculus",
-  "cingulum",
-  "uncinate",
-  "arcuate",
-  "longitudinal",
-
-  // Ventricular system
-  "ventricle",
-  "lateral",
-  "third",
-  "fourth",
-  "aqueduct",
-  "choroid",
-
-  // Cranial nerve nuclei
-  "oculomotor",
-  "trochlear",
-  "trigeminal",
-  "abducens",
-  "facial",
-  "vestibulocochlear",
-  "glossopharyngeal",
-  "vagus",
-  "accessory",
-  "hypoglossal",
-  "olfactory",
-  "optic",
-
-  // Diencephalon
-  "epithalamus",
-  "pineal",
-  "habenula",
-  "geniculate",
-  "pulvinar",
-
-  // Additional regions
-  "brodmann",
-  "area",
-  "gyrus",
-  "sulcus",
-  "fissure",
-  "lobe",
-  "cortex",
-  "matter",
-  "gray",
-  "white",
-  "meninges",
-  "dura",
-  "arachnoid",
-  "subarachnoid",
-  "cerebrospinal",
-  "blood",
-  "barrier",
-  // Functional areas removed to avoid non-region terms
-
-  // Cellular components
-  "neuron",
-  "axon",
-  "dendrite",
-  "synapse",
-  "myelin",
-  "glial",
-  "astrocyte",
-  "oligodendrocyte",
-  "microglia",
-  "ependymal",
-]
+import { BRAIN_REGIONS } from "@/lib/brain-regions"
 
 const MAX_WRONG_GUESSES = 6
 
@@ -171,6 +31,7 @@ export default function Component() {
     setGuessedLetters([])
     setWrongGuesses(0)
     setGameStatus("playing")
+    setRegionInfo(null)
   }
 
   useEffect(() => {
@@ -199,7 +60,7 @@ export default function Component() {
       const newGuessedLetters = [...guessedLetters, letter]
       setGuessedLetters(newGuessedLetters)
 
-      if (!currentWord.includes(letter)) {
+      if (!currentWord.toLowerCase().includes(letter)) {
         setWrongGuesses((prev: number) => prev + 1)
       }
     },
@@ -222,7 +83,13 @@ export default function Component() {
   useEffect(() => {
     if (wrongGuesses >= MAX_WRONG_GUESSES) {
       setGameStatus("lost")
-    } else if (currentWord && currentWord.split("").every((letter) => guessedLetters.includes(letter))) {
+    } else if (
+      currentWord &&
+      currentWord
+        .toLowerCase()
+        .split("")
+        .every((char) => !/[a-z]/.test(char) || guessedLetters.includes(char))
+    ) {
       setGameStatus("won")
     }
   }, [wrongGuesses, guessedLetters, currentWord])
@@ -336,9 +203,22 @@ export default function Component() {
   }, [gameStatus, currentWord])
 
   const displayWord = currentWord
-    .split("")
-    .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
-    .join(" ")
+    .split(" ")
+    .map((word) =>
+      word
+        .split("")
+        .map((char) =>
+          /[a-z]/i.test(char)
+            ? guessedLetters.includes(char.toLowerCase())
+              ? char
+              : "_"
+            : char,
+        )
+        .join(" "),
+    )
+    .join("   ")
+
+  const letterCount = currentWord.replace(/[^a-z]/gi, "").length
 
   // Remove the BrainDrawing component and use an image instead
 
@@ -405,30 +285,30 @@ export default function Component() {
               <CardTitle className="text-center">Brain Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <div style={{ position: 'relative', width: 400, height: 300 }}>
-                <img src="/brain.png" alt="Brain" style={{ width: 400, height: 300, display: 'block' }} />
+              <div style={{ position: 'relative', width: 320, height: 240 }}>
+                <img src="/brain.png" alt="Brain" style={{ width: 320, height: 240, display: 'block' }} />
                 <svg
-                  width={400}
-                  height={300}
+                  width={320}
+                  height={240}
                   style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
                 >
                   {wrongGuesses >= 1 && (
-                    <rect x="0" y="0" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="0" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 2 && (
-                    <rect x="0" y="50" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="40" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 3 && (
-                    <rect x="0" y="100" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="80" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 4 && (
-                    <rect x="0" y="150" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="120" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 5 && (
-                    <rect x="0" y="200" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="160" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                   {wrongGuesses >= 6 && (
-                    <rect x="0" y="250" width="400" height="50" fill="rgba(255,0,0,0.35)" />
+                    <rect x="0" y="200" width="320" height="40" fill="rgba(255,0,0,0.35)" />
                   )}
                 </svg>
               </div>
@@ -446,10 +326,10 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-nowrap">
+                <div className="text-2xl md:text-3xl font-mono font-bold mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-pre-wrap">
                   {displayWord}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({currentWord.length} letters)</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({letterCount} letters)</p>
               </div>
 
               {gameStatus === "playing" && (
@@ -459,7 +339,7 @@ export default function Component() {
                     <div className="flex flex-wrap gap-1">
                       {alphabet.map((letter) => {
                         const guessed = guessedLetters.includes(letter)
-                        const correct = guessed && currentWord.includes(letter)
+                        const correct = guessed && currentWord.toLowerCase().includes(letter)
                         return (
                           <Badge
                             key={letter}
