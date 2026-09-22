@@ -389,8 +389,8 @@ export default function Component() {
           </CardContent>
         </Card>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="max-w-xs mx-auto w-full">
+        <div className="grid md:grid-cols-3 gap-6">
+          <Card className="md:col-span-1">
             <CardHeader>
               <CardTitle className="text-center">Brain Progress</CardTitle>
             </CardHeader>
@@ -430,7 +430,7 @@ export default function Component() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="md:col-span-2">
             <CardHeader>
               <CardTitle className="text-center">Game</CardTitle>
             </CardHeader>
