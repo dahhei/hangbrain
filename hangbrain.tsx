@@ -324,10 +324,11 @@ export default function Component() {
     fetchRegionInfo()
   }, [gameStatus, currentWord])
 
-  const displayWord = currentWord
-    .split("")
-    .map((letter) => (letter === " " ? " " : guessedLetters.includes(letter) ? letter : "_"))
-    .join(" ")
+  const displayWordGroups = currentWord
+    .split(" ")
+    .map((word: string) =>
+      word.split("").map((letter: string) => (guessedLetters.includes(letter) ? letter : "_"))
+    )
 
   // Remove the BrainDrawing component and use an image instead
 
@@ -389,7 +390,7 @@ export default function Component() {
         </Card>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <Card>
+          <Card className="max-w-xs mx-auto w-full">
             <CardHeader>
               <CardTitle className="text-center">Brain Progress</CardTitle>
             </CardHeader>
@@ -435,8 +436,14 @@ export default function Component() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-2xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg break-words">
-                  {displayWord}
+                <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                  {displayWordGroups.map((chars: string[], wordIndex: number) => (
+                    <div key={wordIndex} className="flex gap-x-1 text-2xl font-mono font-bold tracking-wider">
+                      {chars.map((char: string, charIndex: number) => (
+                        <span key={charIndex}>{char}</span>
+                      ))}
+                    </div>
+                  ))}
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   Brain Region ({currentWord.replace(/\s/g, "").length} letters)
