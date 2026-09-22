@@ -11,21 +11,21 @@ import { cn } from "@/lib/utils"
 
 const BRAIN_REGIONS = [
   // Cerebral cortex regions
-  "frontal",
-  "parietal",
-  "temporal",
-  "occipital",
-  "insula",
-  "cingulate",
-  "precentral",
-  "postcentral",
-  "superior",
-  "middle",
-  "inferior",
-  "angular",
-  "supramarginal",
-  "fusiform",
-  "parahippocampal",
+  "frontal lobe",
+  "parietal lobe",
+  "temporal lobe",
+  "occipital lobe",
+  "insular cortex",
+  "cingulate cortex",
+  "precentral gyrus",
+  "postcentral gyrus",
+  "superior temporal gyrus",
+  "middle temporal gyrus",
+  "inferior temporal gyrus",
+  "angular gyrus",
+  "supramarginal gyrus",
+  "fusiform gyrus",
+  "parahippocampal gyrus",
 
   // Subcortical structures
   "hippocampus",
@@ -33,121 +33,107 @@ const BRAIN_REGIONS = [
   "thalamus",
   "hypothalamus",
   "subthalamus",
-  "caudate",
+  "caudate nucleus",
   "putamen",
-  "pallidum",
+  "globus pallidus",
   "striatum",
   "claustrum",
-  "nucleus",
-  "accumbens",
-  "substantia",
-  "nigra",
+  "nucleus accumbens",
+  "substantia nigra",
 
   // Brainstem
   "midbrain",
   "pons",
-  "medulla",
-  "oblongata",
+  "medulla oblongata",
   "tegmentum",
   "tectum",
-  "colliculus",
-  "periaqueductal",
-  "reticular",
-  "raphe",
+  "superior colliculus",
+  "inferior colliculus",
+  "periaqueductal gray",
+  "reticular formation",
+  "raphe nuclei",
 
   // Cerebellum
   "cerebellum",
-  "vermis",
-  "hemisphere",
+  "cerebellar vermis",
+  "cerebellar hemisphere",
   "flocculus",
   "nodulus",
-  "dentate",
-  "interposed",
-  "fastigial",
+  "dentate nucleus",
+  "interposed nucleus",
+  "fastigial nucleus",
 
   // Limbic system
   "fornix",
-  "mammillary",
-  "septal",
-  "olfactory",
-  "piriform",
-  "entorhinal",
-  "perirhinal",
-  "retrosplenial",
+  "mammillary bodies",
+  "septal nuclei",
+  "olfactory bulb",
+  "piriform cortex",
+  "entorhinal cortex",
+  "perirhinal cortex",
+  "retrosplenial cortex",
 
   // White matter tracts
-  "corpus",
-  "callosum",
-  "commissure",
-  "capsule",
-  "corona",
-  "radiata",
-  "fasciculus",
-  "cingulum",
-  "uncinate",
-  "arcuate",
-  "longitudinal",
+  "corpus callosum",
+  "anterior commissure",
+  "internal capsule",
+  "corona radiata",
+  "superior longitudinal fasciculus",
+  "cingulum bundle",
+  "uncinate fasciculus",
+  "arcuate fasciculus",
 
   // Ventricular system
-  "ventricle",
-  "lateral",
-  "third",
-  "fourth",
-  "aqueduct",
-  "choroid",
+  "lateral ventricle",
+  "third ventricle",
+  "fourth ventricle",
+  "cerebral aqueduct",
+  "choroid plexus",
 
   // Cranial nerve nuclei
-  "oculomotor",
-  "trochlear",
-  "trigeminal",
-  "abducens",
-  "facial",
-  "vestibulocochlear",
-  "glossopharyngeal",
-  "vagus",
-  "accessory",
-  "hypoglossal",
-  "olfactory",
-  "optic",
+  "oculomotor nucleus",
+  "trochlear nucleus",
+  "trigeminal nucleus",
+  "abducens nucleus",
+  "facial nucleus",
+  "vestibulocochlear nerve",
+  "glossopharyngeal nerve",
+  "vagus nerve",
+  "accessory nerve",
+  "hypoglossal nerve",
+  "olfactory nerve",
+  "optic nerve",
 
   // Diencephalon
   "epithalamus",
-  "pineal",
+  "pineal gland",
   "habenula",
-  "geniculate",
-  "pulvinar",
+  "geniculate nucleus",
+  "pulvinar nucleus",
 
   // Additional regions
-  "brodmann",
-  "area",
-  "gyrus",
-  "sulcus",
-  "fissure",
-  "lobe",
-  "cortex",
-  "matter",
-  "gray",
-  "white",
+  "brodmann area",
+  "gray matter",
+  "white matter",
+  "cerebral cortex",
   "meninges",
-  "dura",
-  "arachnoid",
-  "subarachnoid",
-  "cerebrospinal",
-  "blood",
-  "barrier",
-  // Functional areas removed to avoid non-region terms
+  "dura mater",
+  "arachnoid mater",
+  "subarachnoid space",
+  "cerebrospinal fluid",
+  "blood brain barrier",
 
   // Cellular components
   "neuron",
   "axon",
   "dendrite",
   "synapse",
-  "myelin",
-  "glial",
+  "myelin sheath",
+  "glial cell",
   "astrocyte",
   "oligodendrocyte",
   "microglia",
-  "ependymal",
+  "ependymal cell",
 ]
 
 const MAX_WRONG_GUESSES = 6
@@ -222,7 +208,10 @@ export default function Component() {
   useEffect(() => {
     if (wrongGuesses >= MAX_WRONG_GUESSES) {
       setGameStatus("lost")
-    } else if (currentWord && currentWord.split("").every((letter) => guessedLetters.includes(letter))) {
+    } else if (
+      currentWord &&
+      currentWord.split("").every((letter: string) => letter === " " || guessedLetters.includes(letter))
+    ) {
       setGameStatus("won")
     }
   }, [wrongGuesses, guessedLetters, currentWord])
@@ -337,7 +326,7 @@ export default function Component() {
 
   const displayWord = currentWord
     .split("")
-    .map((letter) => (guessedLetters.includes(letter) ? letter : "_"))
+    .map((letter) => (letter === " " ? " " : guessedLetters.includes(letter) ? letter : "_"))
     .join(" ")
 
   // Remove the BrainDrawing component and use an image instead
@@ -449,7 +438,9 @@ export default function Component() {
                 <div className="text-3xl font-mono font-bold tracking-wider mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg whitespace-nowrap">
                   {displayWord}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">Brain Region ({currentWord.length} letters)</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Brain Region ({currentWord.replace(/\s/g, "").length} letters)
+                </p>
               </div>
 
               {gameStatus === "playing" && (
